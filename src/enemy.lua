@@ -1,12 +1,19 @@
 local enemy = {}
 
-local enemysprite = nil
-
-function enemy:create_enemy(root, x, y, type)
-    enemysprite = cc.Sprite:createWithSpriteFrameName("E0.png")
-	root:addChild(enemysprite, 2000)
-	enemysprite:setPosition( ccp(x,y) )
+-- cclog
+local cclog = function(...)
+    release_print(string.format(...))
+    --print(string.format(...))
 end
 
+function enemy:create_enemy(root, x, y, type)
+    self.enemysprite = cc.Sprite:createWithSpriteFrameName("E0.png")
+	root:addChild(self.enemysprite, 2000)
+	self.enemysprite:setPosition( ccp(x,y) )
+end
+
+function enemy:getSprite()
+    return self.enemysprite
+end
 
 return enemy

@@ -7,20 +7,25 @@ local cclog = function(...)
 end
 
 
-local hero_sprite = require("hero")
+local hero = require("hero")
 local enemys = require("enemy")
 
+local score = 0
 local touchX = 0
 local touchY = 0
 
 
 local function create_play(root)
-    hero_sprite:create_hero_sprite(root)
+    hero:create_hero_sprite(root)
 end
 
+local t_enemys = {}
 --创建小怪阵列
 local function create_enemys(root)
-	--enemy = enemy:create_hero_sprite(root, 100, 200)
+	for var=1, 10 do
+		enemys:create_enemy(root,var*20+ 50 ,var*20+350 , 0)
+        table.insert(t_enemys, enemys:getSprite())
+	end
 end
 
 local winsize = cc.Director:getInstance():getWinSize()
@@ -59,7 +64,7 @@ local function init(parameters)
 	end	
     
     create_play(bglayer)
-    
+    create_enemys(bglayer)
     
     local function register_touch_event( )
     	local function onTouchBegan(x, y)
@@ -76,9 +81,9 @@ local function init(parameters)
             local subX = x-touchX
             local subY = y-touchY
             
-            local heroCurrentX, heroCurrentY = hero_sprite:getPoint()
+            local heroCurrentX, heroCurrentY = hero:getPoint()
             
-            hero_sprite:move(heroCurrentX + subX, heroCurrentY + subY)
+            hero:move(heroCurrentX + subX, heroCurrentY + subY)
             
             touchX = x
             touchY = y
@@ -108,12 +113,30 @@ local function init(parameters)
     
     register_touch_event() 
     
-	--add layer to scene
-	scene:addChild(bglayer)
-	
-	
-    cc.Director:getInstance():getScheduler():scheduleScriptFunc(bg_run, 1.0/60.0, fasle)
+    local function coll_test(parameters)
+    	for key, var in ipairs(t_enemys) do
+    	   local b = var
+    	   b = tolua.cast(b, "Sprite")
+    	   
+    	   for k,v in ipairs(hero:getBulletsArray()) do
+    	       local bull = v
+    	       bull = tolua.cast(bull, "Node")
+    	       
+                local enemyBox = bull:boundingBox()
+                local bBox = b:boundingBox()
+
+                if cc.rectIntersectsRect(enemyBox, bBox) then
+                    cclog("bom!!!")
+                end
+    	   end
+    	end 
+    end
     
+    
+	--add layer to scene
+	scene:addChild(bglayer)	
+    cc.Director:getInstance():getScheduler():scheduleScriptFunc(bg_run, 1.0/60.0, fasle)
+    cc.Director:getInstance():getScheduler():scheduleScriptFunc(coll_test, 1.0/60.0, fasle)
     
     
     --play music
