@@ -113,12 +113,15 @@ local function init(parameters)
     
     register_touch_event() 
     
+     
+    
     local function coll_test(parameters)
     	for key, var in ipairs(t_enemys) do
     	   local b = var
     	   b = tolua.cast(b, "Sprite")
     	   
-    	   for k,v in ipairs(hero:getBulletsArray()) do
+           local bullets = hero:getBulletsArray()
+           for k,v in ipairs(bullets) do
     	       local bull = v
     	       bull = tolua.cast(bull, "Node")
     	       
@@ -127,6 +130,15 @@ local function init(parameters)
 
                 if cc.rectIntersectsRect(enemyBox, bBox) then
                     cclog("bom!!!")
+                    
+                    bull:removeFromParentAndCleanup(true)
+                    enemyBox:removeFromParentAndCleanup(true)
+                    
+                    
+                    --todo(liyh) remove enemy and bullet from table
+                    
+                    
+                    table()
                 end
     	   end
     	end 
