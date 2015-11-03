@@ -116,12 +116,17 @@ local function init(parameters)
      
     
     local function coll_test(parameters)
-    	for key, var in ipairs(t_enemys) do
+    
+        local bulletDel = {}        --存放删除子弹元素的table
+        local enemyDel = {}        --存放删除敌机的table
+        
+        local bullets = hero:getBulletsArray()
+        
+    	for ienemys, var in ipairs(t_enemys) do
     	   local b = var
-    	   b = tolua.cast(b, "Sprite")
-    	   
-           local bullets = hero:getBulletsArray()
-           for k,v in ipairs(bullets) do
+    	   b = tolua.cast(b, "Sprite")    	   
+           
+           for ibullets,v in ipairs(bullets) do
     	       local bull = v
     	       bull = tolua.cast(bull, "Node")
     	       
@@ -131,17 +136,26 @@ local function init(parameters)
                 if cc.rectIntersectsRect(enemyBox, bBox) then
                     cclog("bom!!!")
                     
-                    bull:removeFromParentAndCleanup(true)
-                    enemyBox:removeFromParentAndCleanup(true)
-                    
-                    
-                    --todo(liyh) remove enemy and bullet from table
-                    
-                    
-                    table()
+                    --bull:removeFromParentAndCleanup(true)
+                    --b:removeFromParentAndCleanup(true)                 
+
+                    --这里有个小技巧，把要删除的数据的表的索引放到删除表缓存中，这样在删除就很方便了
+                    table.insert(bulletDel, ibullets)
+                    table.insert(enemyDel, ienemys)
                 end
     	   end
     	end 
+    	
+        for index, value in ipairs(bulletDel) do
+            bullets[value]:removeFromParentAndCleanup(true)
+    		table.remove(bullets, value)
+    	end
+    	
+    	for index, value in ipairs(enemyDel) do
+           t_enemys[value]:removeFromParentAndCleanup(true)
+    	   table.remove(t_enemys, value)
+    	end
+    	
     end
     
     
