@@ -1,4 +1,5 @@
-local scene
+require("wava")
+local scene --todo(liyh)  HP MP score route 
 
 -- cclog
 local cclog = function(...)
@@ -22,10 +23,22 @@ end
 local t_enemys = {}
 --创建小怪阵列
 local function create_enemys(root)
-	for var=1, 10 do
-		enemys:create_enemy(root,var*20+ 50 ,var*20+350 , 0)
-        table.insert(t_enemys, enemys:getSprite())
-	end
+
+for k,v in pairs(wava) do
+    local delay = v.delay
+    local startX = v.startX
+    local startY = v.startY
+    local endX = v.endX
+    local endY = v.endY
+    
+    enemys:create_enemy(root, startX , startY , 0)
+    table.insert(t_enemys, enemys:getSprite())     
+    
+    --enemys:move(ccp(endX, endY))
+    enemys:startMove(ccp(endX, endY), delay )
+end
+
+
 end
 
 local winsize = cc.Director:getInstance():getWinSize()
@@ -134,10 +147,7 @@ local function init(parameters)
                 local bBox = b:boundingBox()
 
                 if cc.rectIntersectsRect(enemyBox, bBox) then
-                    cclog("bom!!!")
-                    
-                    --bull:removeFromParentAndCleanup(true)
-                    --b:removeFromParentAndCleanup(true)                 
+                    cclog("bom!!!")    
 
                     --这里有个小技巧，把要删除的数据的表的索引放到删除表缓存中，这样在删除就很方便了
                     table.insert(bulletDel, ibullets)
